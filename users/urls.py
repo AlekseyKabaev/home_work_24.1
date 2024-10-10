@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 
 from users.apps import UsersConfig
 from users.views import PaymentViewSet, UserCreateAPIView, UserListAPIView, UserRetrieveAPIView, UserUpdateAPIView, \
-    UserDestroyAPIView
+    UserDestroyAPIView, PaymentForCoursesCreateAPIView
 
 router = SimpleRouter()
 router.register('', PaymentViewSet)
@@ -22,4 +22,6 @@ urlpatterns = [
 
     path('login/', TokenObtainPairView.as_view(permission_classes=(AllowAny,)), name='login'),
     path('token/refresh/', TokenRefreshView.as_view(permission_classes=(AllowAny,)), name='token_refresh'),
+
+    path('payment_for_courses/', PaymentForCoursesCreateAPIView.as_view(), name='payment_for_courses'),
 ] + router.urls
