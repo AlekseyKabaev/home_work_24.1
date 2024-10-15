@@ -11,6 +11,7 @@ from materials.models import Course, Lesson, CourseSubscription
 from materials.serializers import CourseSerializer, LessonSerializer, CourseDetailSerializer, \
     CourseSubscriptionSerializer
 from materials.paginations import CustomPagination
+from materials.tasks import send_course_update_email
 
 from users.permissions import IsModerator, IsOwner
 
@@ -18,6 +19,7 @@ from users.permissions import IsModerator, IsOwner
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
     pagination_class = CustomPagination
+
     # serializer_class = CourseSerializer
 
     def get_serializer_class(self):
@@ -28,6 +30,11 @@ class CourseViewSet(ModelViewSet):
     def perform_create(self, serializer):
         course = serializer.save()
         course.owner = self.request.user
+        course.save()
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+        send_course_update_email.delay(course.pk)
         course.save()
 
     def get_permissions(self):
